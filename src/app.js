@@ -1,13 +1,7 @@
-import { div, button } from '@cycle/dom';
-import { Observable } from 'rx';
+import { div, button } from '@cycle/dom'
+import { Observable } from 'rx'
 
-function displayNotification (state) {
-  if(!state.notification) { return }
-
-  return (
-    div('.notification', 'I\'m a notification')
-  )
-}
+import Notification from './notification'
 
 function toggleNotification (state) {
   return Object.assign(
@@ -34,10 +28,17 @@ export default function App ({DOM}) {
     .scan((state, action) => action(state), initialState)
     .startWith(initialState)
 
+  const props$ = Observable.of({
+    message: 'hello',
+    type: 'danger'
+  })
+
+  const notification = Notification({props: props$})
+
   return {
     DOM: state$.map(state =>
       div('.container',[
-          displayNotification(state),
+          notification.DOM,
           button('.trigger-notification', 'Click me')
         ]
       )
