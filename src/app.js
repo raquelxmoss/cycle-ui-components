@@ -38,7 +38,7 @@ export default function App ({DOM}) {
   return {
     DOM: state$.map(state =>
       div('.container',[
-          notification.DOM,
+          state.notification ? notification.DOM : null,
           button('.trigger-notification', 'Click me')
         ]
       )
