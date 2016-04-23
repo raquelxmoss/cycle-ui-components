@@ -1,4 +1,5 @@
 import { div, button } from '@cycle/dom'
+import isolate from '@cycle/isolate'
 import { Observable } from 'rx'
 
 import Notification from './notification'
@@ -17,7 +18,8 @@ export default function App ({DOM}) {
     type: 'danger'
   })
 
-  const notification = Notification({props: props$, DOM})
+  let DangerNotification = isolate(Notification, 'danger')
+  let notification = DangerNotification({props: props$, DOM})
 
   const click$ = DOM
     .select('.trigger-notification')
