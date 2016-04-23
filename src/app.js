@@ -1,33 +1,46 @@
-import {div, button} from '@cycle/dom';
+import { div, button } from '@cycle/dom';
+import { Observable } from 'rx';
 
-import {Observable} from 'rx';
+function displayNotification (state) {
+  if(!state.notification) { return }
 
-function view (count) {
   return (
-    div('.counter', [
-      div('.count', `Count: ${count}`),
-      button('.subtract', 'Subtract'),
-      button('.add', 'Add')
-    ])
-  );
+    div('.notification', 'I\'m a notification')
+  )
+}
+
+function toggleNotification (state) {
+  return Object.assign(
+    {},
+    state,
+    { notification: !state.notification }
+  )
 }
 
 export default function App ({DOM}) {
-  const add$ = DOM
-    .select('.add')
+  const click$ = DOM
+    .select('.trigger-notification')
     .events('click')
-    .map(ev => +1);
 
-  const subtract$ = DOM
-    .select('.subtract')
-    .events('click')
-    .map(ev => -1);
+  const action$ = Observable.merge(
+    click$.map(_ => toggleNotification)
+  )
 
-  const count$ = add$.merge(subtract$)
-    .startWith(0)
-    .scan((total, change) => total + change);
+  const initialState = {
+    notification: false
+  }
+
+  const state$ = action$
+    .scan((state, action) => action(state), initialState)
+    .startWith(initialState)
 
   return {
-    DOM: count$.map(view)
+    DOM: state$.map(state =>
+      div('.container',[
+          displayNotification(state),
+          button('.trigger-notification', 'Click me')
+        ]
+      )
+    )
   };
 }
